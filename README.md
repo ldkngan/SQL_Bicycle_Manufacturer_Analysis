@@ -1,14 +1,14 @@
 # SQL Bicycle Manufacturer Analytics
 
-## 📋 **Table of Contents**
+## **Table of Contents**
 - Introduction
 - SQL Queries & Results
 - Insights & Recommendations
 
 ---
 
-## 📒 **Introduction**
-### 🎯 Objectives
+## **Introduction**
+### Objectives
         
   The project is designed to simulate a real analytical workflow in a manufacturing and sales environment. The main objectives include:
         
@@ -17,7 +17,7 @@
   - Enhancing analytical thinking by breaking down business problems into smaller SQL components that can be validated and reused.
   - Creating a portfolio-ready SQL project that showcases both technical skills and the ability to communicate analysis clearly.
 
-### 📂 Dataset Description
+### Dataset Description
 
 This project uses selected tables from the **AdventureWorks2019** database. The analytical model is based on a simple star-schema structure including fact and dimension tables.
 
@@ -34,7 +34,7 @@ Dimension Tables
   - Production.Product – Product attributes.
   - Production.ProductSubcategory – Product subcategory classification.
 
-### 🔑 Key Skills Demonstrated
+### Key Skills Demonstrated
 
 This project highlights a range of SQL skills expected from a data analyst or BI analyst:
     
@@ -47,8 +47,8 @@ This project highlights a range of SQL skills expected from a data analyst or BI
 
 ---
 
-## 💻 **SQL Queries & Results**
-### 📌 Q1. Calculate quantity of items, sales value & order quantity by each subcategory in last 12 months (L12M).
+## **SQL Queries & Results**
+### Q1. Calculate quantity of items, sales value & order quantity by each subcategory in last 12 months (L12M).
 ```sql
 SELECT FORMAT_DATETIME('%b %Y', a.ModifiedDate) AS month
       ,c.Name
@@ -68,7 +68,7 @@ ORDER BY 2,PARSE_DATE('%b %Y', month);
 - Result
 <img width="837" height="352" alt="image" src="https://github.com/user-attachments/assets/61e6d641-0df9-4402-9160-37c6dd62960b" />
 
-### 📌 Q2. Calculate %YoY growth rate by subcategory & release top 3 category with highest grow rate.
+### Q2. Calculate %YoY growth rate by subcategory & release top 3 category with highest grow rate.
 ```sql
 WITH 
 cal_qty_item AS (
@@ -123,7 +123,7 @@ ORDER BY 4 DESC;
 - Result
 <img width="636" height="106" alt="image" src="https://github.com/user-attachments/assets/02fd3364-64f6-4f0a-bc2e-ffff8eb8031b" />
 
-### 📌 Q3. Ranking Top 3 TerritoryID with biggest order quantity of every year.
+### Q3. Ranking Top 3 TerritoryID with biggest order quantity of every year.
 ```sql
 WITH cal_order_qty AS (
   SELECT
@@ -154,7 +154,7 @@ ORDER BY 1,4;
 - Result
 <img width="837" height="352" alt="image" src="https://github.com/user-attachments/assets/4154dd37-d872-454e-a352-9524048b09ca" />
 
-### 📌 Q4. Calculate Total Discount Cost belongs to Seasonal Discount for each subcategory.
+### Q4. Calculate Total Discount Cost belongs to Seasonal Discount for each subcategory.
 ```sql
 SELECT 
     EXTRACT(YEAR FROM ModifiedDate) AS year
@@ -180,7 +180,7 @@ GROUP BY 1,2;
 - Result
 <img width="511" height="81" alt="image" src="https://github.com/user-attachments/assets/0e20be01-6b24-43ef-9883-901333f73ca6" />
 
-### 📌 Q5. Retention rate of customer in 2014 with status of Successfully Shipped (Cohort Analysis).
+### Q5. Retention rate of customer in 2014 with status of Successfully Shipped (Cohort Analysis).
 ```sql
 WITH 
 info AS (
@@ -231,7 +231,7 @@ ORDER BY 1,2;
 - Result
 <img width="513" height="377" alt="image" src="https://github.com/user-attachments/assets/f0633fe3-5755-440e-9d93-e8c9c5dd4b29" />
 
-## 📌 Q6. Trend of stock level & MoM% by all product in 2011.
+## Q6. Trend of stock level & MoM% by all product in 2011.
 ```sql
 WITH
 cal_stock_qty AS (
@@ -270,7 +270,7 @@ ORDER BY 1, 2 DESC;
 - Result
 <img width="883" height="351" alt="image" src="https://github.com/user-attachments/assets/3d7d96af-5fd3-47e0-916a-3f372bbdad86" />
 
-## 📌 Q7. Calculate Ratio of Stock/Sales in 2011 by product name and month.
+## Q7. Calculate Ratio of Stock/Sales in 2011 by product name and month.
 ```sql
 WITH 
 sale_info AS (
@@ -316,7 +316,7 @@ ORDER BY 1 DESC, 7 DESC;
 - Result
 <img width="1009" height="350" alt="image" src="https://github.com/user-attachments/assets/cdb09a91-e3a3-42d2-9e2e-54cb2d87134f" />
 
-## 📌 Q8. Number of orders and values at Pending status in 2014.
+## Q8. Number of orders and values at Pending status in 2014.
 ```sql
 SELECT
   EXTRACT(YEAR FROM ModifiedDate) AS year
@@ -333,7 +333,7 @@ GROUP BY 1,2;
 
 ---
 
-## 💡 **Insights & Recommendations**
+## **Insights & Recommendations**
 
 | **Queries** | **Insights** | **Recommendations** |
 |----------|--------------|---------------------|

@@ -1,4 +1,4 @@
-# SQL Bicycle Manufacturer Analysis
+# SQL | Bicycle Manufacturer Analysis
 
 ## **Table of Contents**
 - Introduction

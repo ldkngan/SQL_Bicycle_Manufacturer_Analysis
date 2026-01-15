@@ -1,5 +1,10 @@
 # SQL | Bicycle Manufacturer Sales Analysis
-This project analyzes sales performance, inventory trends, customer retention, and operational metrics using SQL on the AdventureWorks2019 dataset. It includes queries for year-over-year growth, category performance, stock movement, stock-to-sales ratios, cohort retention, and order status monitoring.
+
+<img width="800" height="480" alt="Bicycle Manufacturer Sales Analysis" src="https://github.com/user-attachments/assets/600fe11b-d913-45ee-a065-893f3ed396c6" />
+
+This project analyzes **sales performance, inventory trends, customer retention, and operational metrics** using SQL on the AdventureWorks2019 dataset. It includes queries for year-over-year growth, category performance, stock movement, stock-to-sales ratios, cohort retention, and order status monitoring.
+- **Author**: Le Dang Kim Ngan
+- **Tool Used**: SQL/BigQuery
 
 ---
 
@@ -24,7 +29,7 @@ This project analyzes sales performance, inventory trends, customer retention, a
 
 This project uses selected tables from the **AdventureWorks2019** database. The analytical model is based on a simple star-schema structure including fact and dimension tables.
 
-Fact Tables
+**Fact Tables**
 
   - Sales.SalesOrderDetail – Line-level sales transactions.
   - Sales.SalesOrderHeader – Order-level sales information.
@@ -32,7 +37,7 @@ Fact Tables
   - Production.WorkOrder – Manufacturing work orders and stock movement.
   - Purchasing.PurchaseOrderHeader – Purchase order records.
 
-Dimension Tables
+**Dimension Tables**
 
   - Production.Product – Product attributes.
   - Production.ProductSubcategory – Product subcategory classification.
@@ -52,6 +57,14 @@ This project highlights a range of SQL skills expected from a data analyst or BI
 
 ## **SQL Queries & Results**
 ### Q1. Calculate quantity of items, sales value & order quantity by each subcategory in last 12 months (L12M).
+The goal of this analysis is to evaluate **recent sales performance by product subcategory over the last 12 months (L12M)**.  
+Specifically, it aims to measure **sales volume (items sold), revenue contribution, and order frequency** for each subcategory, using a rolling 12-month window based on the latest available transaction date.
+
+This analysis helps identify:
+- Which subcategories are currently driving revenue versus volume.
+- Differences between high-volume, low-value products and low-volume, high-value products.
+- Short-term performance trends that are most relevant for pricing, promotion, and inventory decisions.
+
 ```sql
 SELECT FORMAT_DATETIME('%b %Y', a.ModifiedDate) AS month
       ,c.Name
@@ -72,6 +85,15 @@ ORDER BY 2,PARSE_DATE('%b %Y', month);
 <img width="837" height="352" alt="image" src="https://github.com/user-attachments/assets/61e6d641-0df9-4402-9160-37c6dd62960b" />
 
 ### Q2. Calculate %YoY growth rate by subcategory & release top 3 category with highest grow rate.
+The goal of this analysis is to **measure year-over-year (YoY) growth in sales volume by product subcategory** and to **identify the top three subcategories with the highest growth rates**.
+
+By comparing each subcategory’s item quantity sold against the previous year, this query highlights:
+- Which product subcategories are expanding fastest over time.
+- Where demand acceleration is occurring, independent of absolute sales size. 
+- The key growth drivers contributing to overall business momentum.
+
+This analysis supports strategic decisions around **growth-focused investment, inventory scaling, and marketing prioritization** by surfacing subcategories with the strongest upward demand trends.
+
 ```sql
 WITH 
 cal_qty_item AS (
@@ -127,6 +149,15 @@ ORDER BY 4 DESC;
 <img width="636" height="106" alt="image" src="https://github.com/user-attachments/assets/02fd3364-64f6-4f0a-bc2e-ffff8eb8031b" />
 
 ### Q3. Ranking Top 3 TerritoryID with biggest order quantity of every year.
+The goal of this analysis is to **identify the top three sales territories with the highest order quantity for each year**.
+
+By ranking territories annually based on total order volume, this query is designed to:
+- Highlight consistently high-performing territories over time.
+- Detect shifts in regional demand or customer activity year by year.  
+- Provide a clear benchmark for comparing territorial sales performance.
+
+This analysis supports **regional sales strategy, resource allocation, and market expansion planning** by showing where order demand is strongest and how territorial leadership evolves over time.
+
 ```sql
 WITH cal_order_qty AS (
   SELECT
@@ -158,6 +189,15 @@ ORDER BY 1,4;
 <img width="837" height="352" alt="image" src="https://github.com/user-attachments/assets/4154dd37-d872-454e-a352-9524048b09ca" />
 
 ### Q4. Calculate Total Discount Cost belongs to Seasonal Discount for each subcategory.
+The goal of this analysis is to **quantify the total cost of seasonal discount programs by product subcategory on a yearly basis**.
+
+By calculating the monetary value of discounts applied to seasonal promotions, this query aims to:
+- Identify which subcategories consume the largest share of discount spending.  
+- Reveal how promotional costs are distributed across product categories.  
+- Provide visibility into the financial impact of seasonal discount strategies.
+
+This analysis supports **promotion effectiveness evaluation and pricing strategy optimization**, helping determine whether discount investments are aligned with subcategory performance and revenue contribution.
+
 ```sql
 SELECT 
     EXTRACT(YEAR FROM ModifiedDate) AS year
@@ -184,6 +224,15 @@ GROUP BY 1,2;
 <img width="511" height="81" alt="image" src="https://github.com/user-attachments/assets/0e20be01-6b24-43ef-9883-901333f73ca6" />
 
 ### Q5. Retention rate of customer in 2014 with status of Successfully Shipped (Cohort Analysis).
+The goal of this analysis is to **measure customer retention behavior in 2014 using a cohort-based approach**, focusing only on **successfully shipped orders**.
+
+By grouping customers according to their **first purchase month** and tracking their subsequent purchasing activity over time, this query aims to:
+- Understand how frequently customers return after their initial purchase.
+- Identify early drop-off points in the customer lifecycle.
+- Evaluate short-term retention strength following the first successful order.
+
+This cohort analysis supports **customer retention strategy, post-purchase engagement planning, and lifecycle optimization** by revealing when customers are most likely to churn or remain active.
+
 ```sql
 WITH 
 info AS (
@@ -235,6 +284,15 @@ ORDER BY 1,2;
 <img width="513" height="377" alt="image" src="https://github.com/user-attachments/assets/f0633fe3-5755-440e-9d93-e8c9c5dd4b29" />
 
 ## Q6. Trend of stock level & MoM% by all product in 2011.
+The goal of this analysis is to **track monthly stock level trends and month-over-month (MoM) percentage changes for all products in 2011**.
+
+By comparing each product’s current month stock quantity with its previous month, this query aims to:
+- Identify products with rapidly increasing inventory, signaling potential overstocking or slowing demand.
+- Detect products with sharp stock declines, indicating fast-moving items or replenishment risks.  
+- Reveal inventory movement patterns across the year that may reflect seasonality or production planning issues.
+
+This analysis supports **inventory control, supply planning, and production adjustment decisions** by providing early signals of imbalance between stock levels and operational demand.
+
 ```sql
 WITH
 cal_stock_qty AS (
@@ -274,6 +332,15 @@ ORDER BY 1, 2 DESC;
 <img width="883" height="351" alt="image" src="https://github.com/user-attachments/assets/3d7d96af-5fd3-47e0-916a-3f372bbdad86" />
 
 ## Q7. Calculate Ratio of Stock/Sales in 2011 by product name and month.
+The goal of this analysis is to **evaluate inventory efficiency by calculating the stock-to-sales ratio for each product on a monthly basis in 2011**.
+
+By comparing available stock levels against actual sales volume, this query aims to:
+- Identify products with excess inventory relative to sales velocity.
+- Detect fast-selling products with low stock coverage and potential stock-out risk.
+- Provide a normalized metric to compare inventory performance across products and time periods.
+
+This analysis supports **inventory optimization, demand forecasting, and production planning** by highlighting imbalances between stock availability and market demand.
+
 ```sql
 WITH 
 sale_info AS (
@@ -320,6 +387,15 @@ ORDER BY 1 DESC, 7 DESC;
 <img width="1009" height="350" alt="image" src="https://github.com/user-attachments/assets/cdb09a91-e3a3-42d2-9e2e-54cb2d87134f" />
 
 ## Q8. Number of orders and values at Pending status in 2014.
+The goal of this analysis is to **quantify the volume and monetary value of purchase orders remaining in pending status during 2014**.
+
+By focusing on orders that have not yet progressed beyond the pending stage, this query aims to:
+- Measure the scale of operational backlog in the purchasing process.
+- Assess the financial exposure tied up in unprocessed or delayed orders. 
+- Provide visibility into potential bottlenecks within approval or fulfillment workflows.
+
+This analysis supports **operational efficiency improvement and process monitoring** by highlighting pending workload levels and their impact on procurement performance.
+
 ```sql
 SELECT
   EXTRACT(YEAR FROM ModifiedDate) AS year
@@ -338,7 +414,7 @@ GROUP BY 1,2;
 
 ## **Insights & Recommendations**
 
-| **Queries** | **Insights** | **Recommendations** |
+| **Query** | **Insight** | **Recommendation** |
 |----------|--------------|---------------------|
 | **Q1 — Sales Performance by Subcategory (Last 12 Months)** | The 12-month view highlights which subcategories drive sales volume, revenue, and order counts. Some subcategories generate high volume but low revenue, indicating lower-priced items. Others produce strong revenue despite fewer orders, suggesting high-value products. | Strengthen investment in subcategories showing stable revenue and volume growth. Reevaluate pricing or introduce cross-sell strategies for high-volume, low-revenue groups. Review pricing sensitivity for high-value items with low order counts to optimize profitability. |
 | **Q2 — YoY Growth Rate & Top 3 Subcategories with Highest Growth** | The top 3 fastest-growing subcategories are the primary contributors to overall business momentum. Their strong YoY performance may signal rising market demand or successful marketing activity. | Prioritize marketing and inventory allocation for these high-growth subcategories. Monitor their growth trajectory to detect early signs of slowdown. For low-growth or negative-growth groups, reassess competitive positioning, pricing, or product relevance. |

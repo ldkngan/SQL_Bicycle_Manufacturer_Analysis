@@ -76,6 +76,7 @@ LEFT JOIN `adventureworks2019.Production.Product` b
   ON a.ProductID = b.ProductID
 LEFT JOIN `adventureworks2019.Production.ProductSubcategory` c
   ON b.ProductSubcategoryID = CAST(c.ProductSubcategoryID AS STRING)
+-- Filter records within the last 12 months based on latest ModifiedDate
 WHERE DATE(a.ModifiedDate) >= (SELECT DATE_SUB(DATE(MAX(a.ModifiedDate)), INTERVAL 12 MONTH)
                                FROM `adventureworks2019.Sales.SalesOrderDetail`)
 GROUP BY 1,2
@@ -96,7 +97,7 @@ This analysis supports strategic decisions around **growth-focused investment, i
 
 ```sql
 WITH 
-cal_qty_item AS (
+cal_qty_item AS ( -- Calculate yearly sold quantity by subcategory
   SELECT
     EXTRACT(YEAR FROM a.ModifiedDate) AS year
     ,c.Name
@@ -109,7 +110,7 @@ cal_qty_item AS (
   GROUP BY 1,2
 )
 
-,cal_prv_qty AS (
+,cal_prv_qty AS ( -- Retrieve previous year's quantity using LAG
   SELECT
     year 
     ,Name
@@ -118,7 +119,7 @@ cal_qty_item AS (
   FROM cal_qty_item
 )
 
-,cal_qty_diff AS (
+,cal_qty_diff AS ( -- Calculate YoY growth rate
   SELECT
     Name
     ,qty_item 
@@ -128,7 +129,7 @@ cal_qty_item AS (
   WHERE prv_qty IS NOT NULL
 )
 
-SELECT
+SELECT -- Rank subcategories by YoY growth and select top 3
   Name
   ,qty_item 
   ,prv_qty 
@@ -159,7 +160,7 @@ By ranking territories annually based on total order volume, this query is desig
 This analysis supports **regional sales strategy, resource allocation, and market expansion planning** by showing where order demand is strongest and how territorial leadership evolves over time.
 
 ```sql
-WITH cal_order_qty AS (
+WITH cal_order_qty AS ( -- Calculate order quantity by year and territory
   SELECT
     EXTRACT(YEAR FROM a.ModifiedDate) AS year
     ,TerritoryID
@@ -169,7 +170,7 @@ WITH cal_order_qty AS (
   GROUP BY 1,2
 )
 
-SELECT
+SELECT -- Rank territories within each year
   year
   ,TerritoryID 
   ,order_cnt
@@ -208,7 +209,7 @@ FROM (
           DISTINCT a.ModifiedDate
           ,c.Name
           ,d.DiscountPct, d.Type
-          ,a.OrderQty * d.DiscountPct * UnitPrice AS disc_cost 
+          ,a.OrderQty * d.DiscountPct * UnitPrice AS disc_cost -- Discount cost = Quantity * Discount % * Unit Price
         FROM `adventureworks2019.Sales.SalesOrderDetail` a
         LEFT JOIN `adventureworks2019.Production.Product` b 
           ON a.ProductID = b.ProductID
@@ -216,7 +217,7 @@ FROM (
           ON CAST(b.ProductSubcategoryID AS INT) = c.ProductSubcategoryID
         LEFT JOIN `adventureworks2019.Sales.SpecialOffer` d 
           ON a.SpecialOfferID = d.SpecialOfferID
-        WHERE LOWER(d.Type) LIKE '%seasonal discount%' 
+        WHERE LOWER(d.Type) LIKE '%seasonal discount%' -- Filter only seasonal discount promotions
       )
 GROUP BY 1,2;
 ```
@@ -235,7 +236,7 @@ This cohort analysis supports **customer retention strategy, post-purchase engag
 
 ```sql
 WITH 
-info AS (
+info AS ( -- Monthly order count per customer
   SELECT  
     EXTRACT(MONTH FROM ModifiedDate) AS month_no
     ,EXTRACT(YEAR FROM ModifiedDate) AS year_no
@@ -248,19 +249,19 @@ info AS (
   ORDER BY 3,1 
 ),
 
-row_num AS (
+row_num AS ( -- Assign order sequence per customer
   SELECT *
       ,ROW_NUMBER() OVER(PARTITION BY CustomerID ORDER BY month_no) AS row_numb
   FROM info 
 ), 
 
-first_order AS (
+first_order AS ( -- Identify first purchase month (cohort month)
   SELECT *
   FROM row_num
   WHERE row_numb = 1
 ), 
 
-month_gap AS (
+month_gap AS ( -- Calculate month difference from first purchase
   SELECT 
     a.CustomerID
     ,b.month_no AS month_join
@@ -295,7 +296,7 @@ This analysis supports **inventory control, supply planning, and production adju
 
 ```sql
 WITH
-cal_stock_qty AS (
+cal_stock_qty AS ( -- Calculate stock quantity by product and month
   SELECT
     Name
     ,EXTRACT(MONTH FROM a.ModifiedDate) AS month
@@ -308,7 +309,7 @@ cal_stock_qty AS (
   GROUP BY 1,2,3
 ),
 
-cal_stock_prv AS (
+cal_stock_prv AS ( -- Retrieve previous month's stock using LAG
   SELECT
     Name
     ,month 
@@ -318,7 +319,7 @@ cal_stock_prv AS (
   FROM cal_stock_qty
 )
 
-SELECT
+SELECT -- Calculate MoM percentage change
   Name
   ,month 
   ,year 
@@ -343,7 +344,7 @@ This analysis supports **inventory optimization, demand forecasting, and product
 
 ```sql
 WITH 
-sale_info AS (
+sale_info AS ( -- Calculate monthly sales quantity by product
   SELECT 
     EXTRACT(MONTH FROM a.ModifiedDate) AS mth 
     ,EXTRACT(YEAR FROM a.ModifiedDate) AS yr 
@@ -357,7 +358,7 @@ sale_info AS (
   GROUP BY 1,2,3,4
 ), 
 
-stock_info AS (
+stock_info AS ( -- Calculate monthly stock quantity by product
   SELECT
     EXTRACT(MONTH FROM ModifiedDate) AS mth 
     ,EXTRACT(YEAR FROM ModifiedDate) AS yr 
@@ -368,7 +369,7 @@ stock_info AS (
   GROUP BY 1,2,3
 )
 
-SELECT
+SELECT -- Combine sales and stock data to calculate ratio
   a.mth
   ,a.yr
   ,a.ProductId
@@ -403,6 +404,7 @@ SELECT
   ,COUNT(DISTINCT PurchaseOrderID) AS order_cnt
   ,SUM(TotalDue) AS value 
 FROM adventureworks2019.Purchasing.PurchaseOrderHeader
+-- Filter for pending status in 2014
 WHERE EXTRACT(YEAR FROM ModifiedDate) = 2014
   AND Status = 1
 GROUP BY 1,2;
